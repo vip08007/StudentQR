@@ -1,14 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Student Verification</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            text-align: center;
+            padding-top: 40px;
+        }
+        input {
+            padding: 8px;
+            margin: 6px;
+            width: 220px;
+        }
+        button {
+            padding: 8px 16px;
+            cursor: pointer;
+        }
+        #result {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+        .box {
+            background: white;
+            width: 320px;
+            margin: auto;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px #ccc;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="box">
+    <h3>Student Detail Verification</h3>
+
+    <input type="text" id="uid" placeholder="Enter Unique ID"><br>
+    <input type="text" id="mobile" placeholder="Enter Mobile No"><br>
+    <button onclick="searchStudent()">Search</button>
+
+    <div id="result"></div>
+</div>
+
 <script>
 let students = [];
 
 fetch('students.csv')
-.then(response => response.text())
+.then(res => res.text())
 .then(data => {
     let rows = data.split(/\r?\n/);
     rows.slice(1).forEach(row => {
-        let cols = row.split(",");
-        if(cols.length >= 6){
-            students.push(cols.map(col => col.trim()));
+        let cols = row.split("\t").map(c => c.trim());
+        if (cols.length >= 6) {
+            students.push(cols);
         }
     });
 });
@@ -17,21 +65,22 @@ function searchStudent() {
     let uid = document.getElementById("uid").value.trim();
     let mobile = document.getElementById("mobile").value.trim();
 
-    let found = students.find(student =>
-        student[3].trim() == uid &&
-        student[2].trim() == mobile
-    );
+    let s = students.find(x => x[3] === uid && x[2] === mobile);
 
-    if(found){
+    if (s) {
         document.getElementById("result").innerHTML =
-            "Name: " + found[0] + "<br>" +
-            "Father Name: " + found[1] + "<br>" +
-            "Mobile: " + found[2] + "<br>" +
-            "Unique ID: " + found[3] + "<br>" +
-            "2 Wheeler: " + found[4] + "<br>" +
-            "4 Wheeler: " + found[5];
+            "Name: " + s[0] + "<br>" +
+            "Father Name: " + s[1] + "<br>" +
+            "Mobile: " + s[2] + "<br>" +
+            "Unique ID: " + s[3] + "<br>" +
+            "2 Wheeler: " + s[4] + "<br>" +
+            "4 Wheeler: " + s[5];
     } else {
-        document.getElementById("result").innerHTML = "Invalid Details!";
+        document.getElementById("result").innerHTML =
+            "<span style='color:red'>Invalid Details!</span>";
     }
 }
 </script>
+
+</body>
+</html>
