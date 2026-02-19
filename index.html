@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Verification</title>
+    <style>
+        body { font-family: Arial; text-align:center; margin-top:40px; }
+        input { padding:8px; margin:5px; }
+        button { padding:8px 15px; }
+        #result { margin-top:20px; font-weight:bold; }
+    </style>
+</head>
+<body>
+
+<h2>Student Detail Verification</h2>
+
+<input type="text" id="uid" placeholder="Enter Unique ID"><br>
+<input type="text" id="mobile" placeholder="Enter Mobile No"><br>
+<button onclick="searchStudent()">Search</button>
+
+<div id="result"></div>
+
+<script>
+let students = [];
+
+fetch('students.csv')
+.then(response => response.text())
+.then(data => {
+    let rows = data.split("\n");
+    rows.slice(1).forEach(row => {
+        let cols = row.split(",");
+        students.push(cols);
+    });
+});
+
+function searchStudent() {
+    let uid = document.getElementById("uid").value.trim();
+    let mobile = document.getElementById("mobile").value.trim();
+    let found = false;
+
+    students.forEach(student => {
+        if(student[3] === uid && student[2] === mobile) {
+            document.getElementById("result").innerHTML =
+                "Name: " + student[0] + "<br>" +
+                "Father Name: " + student[1] + "<br>" +
+                "Mobile: " + student[2] + "<br>" +
+                "Unique ID: " + student[3] + "<br>" +
+                "2 Wheeler: " + student[4] + "<br>" +
+                "4 Wheeler: " + student[5];
+            found = true;
+        }
+    });
+
+    if(!found) {
+        document.getElementById("result").innerHTML = "Invalid Details!";
+    }
+}
+</script>
+
+</body>
+</html>
