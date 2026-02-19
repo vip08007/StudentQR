@@ -52,29 +52,52 @@ let students = [];
 fetch('students.csv')
 .then(res => res.text())
 .then(data => {
+
+    // REMOVE UTF-8 BOM if present
+    data = data.replace(/^\uFEFF/, "");
+
     let rows = data.split(/\r?\n/);
+
     rows.slice(1).forEach(row => {
-        let cols = row.split("\t").map(c => c.trim());
+        if(row.trim() === "") return;
+
+        // SUPPORT TAB OR COMMA
+        let cols = row.includes("\t") ? row.split("\t") : row.split(",");
+
+        cols = cols.map(c => c.replace(/\r/g, "").trim());
+
         if (cols.length >= 6) {
             students.push(cols);
         }
     });
+
+    console.log("Loaded students:", students.length);
 });
 
 function searchStudent() {
+
     let uid = document.getElementById("uid").value.trim();
     let mobile = document.getElementById("mobile").value.trim();
 
-    let s = students.find(x => x[3] === uid && x[2] === mobile);
+    let found = null;
 
-    if (s) {
+    for (let i = 0; i < students.length; i++) {
+        let s = students[i];
+
+        if (s[3] === uid && s[2] === mobile) {
+            found = s;
+            break;
+        }
+    }
+
+    if (found) {
         document.getElementById("result").innerHTML =
-            "Name: " + s[0] + "<br>" +
-            "Father Name: " + s[1] + "<br>" +
-            "Mobile: " + s[2] + "<br>" +
-            "Unique ID: " + s[3] + "<br>" +
-            "2 Wheeler: " + s[4] + "<br>" +
-            "4 Wheeler: " + s[5];
+            "Name: " + found[0] + "<br>" +
+            "Father Name: " + found[1] + "<br>" +
+            "Mobile No: " + found[2] + "<br>" +
+            "Unique ID: " + found[3] + "<br>" +
+            "2 Wheeler No: " + found[4] + "<br>" +
+            "4 Wheeler No: " + found[5];
     } else {
         document.getElementById("result").innerHTML =
             "<span style='color:red'>Invalid Details!</span>";
@@ -84,3 +107,4 @@ function searchStudent() {
 
 </body>
 </html>
+
